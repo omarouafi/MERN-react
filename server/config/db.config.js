@@ -6,12 +6,16 @@ const connectDb = async () => {
 
     try {
         
-        mongoose.connect()
-        console.log("Database is connected");
+        const result =  await mongoose.connect(process.env.DB,{
+            useCreateIndex:true,
+            useUnifiedTopology:true,
+            useNewUrlParser:true
+        })
+        console.log(`Database is connected ${result.connection.host}`);
 
     } catch (error) {
         console.log(error);
-        process.exit(1);
+        
     }
 
 
