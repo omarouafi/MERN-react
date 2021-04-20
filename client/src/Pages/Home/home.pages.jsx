@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch,useSelector } from "react-redux";
 import { Col, Container, Row } from 'react-bootstrap'
-import axios from 'axios'
+
 import Product from '../../components/Product/product.component'
 import "./home.styles.scss"
+import { productsFetchAsync } from '../../redux/products/product.actions';
 
 
 
 const Home = () => {
     
-    const [products,setProducts] = useState([]);
-    
-    const fetchProducts = async () => {
-        const {data} = await axios.get('/api/products')
-        setProducts(data)
-    }
+    const dispatch = useDispatch();
+    const productsList = useSelector(state => state.productRed);
+    const {loading,error,products} = productsList
     useEffect(()=>{
-        fetchProducts()
-    },[products])
+        dispatch(productsFetchAsync())
+    },[dispatch])
 
     return (
 
@@ -24,6 +23,13 @@ const Home = () => {
         <main>
         <Container>
 
+            {
+                loading ?
+                 <h2>Loading</h2>
+                 : error ? 
+                 <h2>{error}</h2>
+                 :
+                 <>
             <h1>Latest Products</h1>
             <Row>
                 {
@@ -37,6 +43,8 @@ const Home = () => {
                         ) )
                     }
             </Row>
+            </>
+            }
             </Container>
         </main>
 
