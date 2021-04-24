@@ -1,23 +1,24 @@
 import axios from 'axios'
 import React,{useState,useEffect} from 'react'
-import { Col, Row,Image, ListGroup,Card, Button } from 'react-bootstrap'
+import {useDispatch,useSelector} from "react-redux";
+import { Col, Row,Image, ListGroup,Card, Button, Spinner } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import Rating from '../../components/Rating/rating.component'
 import './product.styles.scss'
+import { fetchProdDetail } from '../../redux/product_detail/p_detail.actions';
+import Loader from '../../components/Spinner/Spinner.component';
+import Message from '../../components/Message/Message.component';
 
 
 const ProductPage = ({match}) =>{
     
-    const [product, setproduct] = useState({})
+    const dispatch = useDispatch();
+    const {product,loading,error} = useSelector(state => state.productDetail);
 
     
     useEffect(() => {
-        const fetchProduct = async () => {
-            const {data} = await axios.get(`/api/products/${match.params.id}`)
-            setproduct(data)
-        }
-        fetchProduct()
-    }, [])
+        dispatch(fetchProdDetail(match.params.id));
+    }, [dispatch,match.params.id])
     
     
     return (
@@ -25,6 +26,9 @@ const ProductPage = ({match}) =>{
             <Link to='/' className="btn btn-light my-3">
                 Go back
             </Link>
+            {
+                loading? <Loader />:error? <Message variant="danger">{error}</Message>:
+            
             <Row>
                 <Col md={6}>
                     <Image src={product.image} alt={product.name} fluid />
@@ -82,6 +86,7 @@ const ProductPage = ({match}) =>{
                     </Card>                   
                 </Col>
             </Row>
+            }
         </div>        
     )
 }

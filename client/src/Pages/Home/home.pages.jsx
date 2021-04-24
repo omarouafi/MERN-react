@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch,useSelector } from "react-redux";
-import { Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Row, Spinner } from 'react-bootstrap'
 
 import Product from '../../components/Product/product.component'
 import "./home.styles.scss"
 import { productsFetchAsync } from '../../redux/products/product.actions';
+import Loader from '../../components/Spinner/Spinner.component';
+import Message from '../../components/Message/Message.component';
 
 
 
@@ -25,9 +27,9 @@ const Home = () => {
 
             {
                 loading ?
-                 <h2>Loading</h2>
+                <Loader />
                  : error ? 
-                 <h2>{error}</h2>
+                 <Message variant='danger'>{error}</Message>
                  :
                  <>
             <h1>Latest Products</h1>
