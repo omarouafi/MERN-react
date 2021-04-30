@@ -4,11 +4,13 @@ import connectDb from "./config/db.config.js"
 import { Product } from "./models/productModel.js"
 import asyncHandler from "express-async-handler"
 import {NotFound,errorHandler} from './middleware/errMiddleware.js'
+import productRouter from "./routes/products.routes.js"
+import userRouter from "./routes/user.routes.js"
+import orderRouter from "./routes/order.routes.js"
 
 dotenv.config()
 
 const app = express()
-
 
 
 const PORT = process.env.PORT || 5050
@@ -18,6 +20,10 @@ app.listen(PORT,()=>{
 })
 
 connectDb()
+app.use(express.json())
+app.use('/api/products', productRouter )
+app.use('/api/users', userRouter )
+app.use('/api/orders', orderRouter )
 
 
 
@@ -25,25 +31,8 @@ connectDb()
 
 
 
-app.get('/',(req,res)=>{
-    res.send('Api is running')
-})
 
 
-app.get('/api/products', asyncHandler(async(req,res)=>{
-    const products = await Product.find()
-    
-    res.status(200).json(products)
-}))
-
-
-app.get('/api/products/:id', asyncHandler( async (req,res)=>{
-    
-    
-    const product = await Product.findById(req.params.id)
-    product ? res.status(200).json(product) : res.status(404).json({message:"Product Not Found"})
-    
-}))
 
 app.use(NotFound)
 
