@@ -37,7 +37,7 @@ function Profile({history,location}) {
         }
 
         
-    },[dispatch,user,history,currentUser])
+    },[dispatch,user,history,currentUser,redirect])
     
     const handleSubmit = (e) => {
         e.preventDefault()

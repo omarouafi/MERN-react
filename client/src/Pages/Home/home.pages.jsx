@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch,useSelector } from "react-redux";
-import { Col, Container, Row, Spinner } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
 
 import Product from '../../components/Product/product.component'
 import "./home.styles.scss"

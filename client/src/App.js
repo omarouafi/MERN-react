@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import Header from './components/Header/header.component';
 import Footer from './components/Footer/Footer.component';
@@ -12,12 +11,14 @@ import Profile from './Pages/Profile/profile.page';
 import Shipping from './Pages/Shipping/shipping.page';
 import Payment from './Pages/Payment/payment.page';
 import PlaceOrder from './Pages/PlaceOrder/order.page';
+import OrderDetails from './Pages/PlaceOrder/details.page';
 
 function App() {
   return (
     <div className="App">
       <Header />
       <Route path="/cart/:id?" exact component={Cart} />
+      <Route path="/order/:id" exact component={OrderDetails} />
       <Route path="/register" exact component={Register} />
       <Route path="/payment" exact component={Payment} />
       <Route path="/placeorder" exact component={PlaceOrder} />

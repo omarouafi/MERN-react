@@ -1,12 +1,8 @@
 import React,{useState,useEffect} from 'react'
-import { Form,Row,Col,Button } from 'react-bootstrap'
-import {useDispatch,useSelector} from 'react-redux'
-import {Link} from 'react-router-dom'
-import { loginAction, registerAction } from '../../redux/user/user.action'
-import Message from '../../components/Message/Message.component'
-import Loader from '../../components/Spinner/Spinner.component'
+import { Form,Col,Button } from 'react-bootstrap'
+import {useDispatch} from 'react-redux'
 import FormContainer from '../../components/FormContainer/form.container'
-import { saveShippingAction,savePaymentAction } from '../../redux/cart/cart.actions'
+import { savePaymentAction } from '../../redux/cart/cart.actions'
 import CheckoutSteps from '../../components/CheckoutProcess/check.component'
 
 function Payment({history,location}) {
@@ -14,7 +10,6 @@ function Payment({history,location}) {
 
 
     
-    const savedAddress = useSelector(state => state.cart.shippingAddress)
 
     const [paymentMethod,setPaymentMethod] = useState('Paypal')
     

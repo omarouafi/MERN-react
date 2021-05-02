@@ -2,9 +2,8 @@ import React,{useState,useEffect} from 'react'
 import { Form,Row,Col,Button } from 'react-bootstrap'
 import {useDispatch,useSelector} from 'react-redux'
 import {Link} from 'react-router-dom'
-import { loginAction, registerAction } from '../../redux/user/user.action'
+import { registerAction } from '../../redux/user/user.action'
 import Message from '../../components/Message/Message.component'
-import Loader from '../../components/Spinner/Spinner.component'
 import FormContainer from '../../components/FormContainer/form.container'
 
 function Register({history,location}) {
@@ -25,7 +24,7 @@ function Register({history,location}) {
         if (currentUser) {
             history.push(redirect)
         }
-    },[])
+    },[history,redirect,currentUser])
 
     const handleSubmit = (e) => {
         e.preventDefault()

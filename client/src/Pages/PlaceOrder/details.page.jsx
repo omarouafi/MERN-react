@@ -1,13 +1,18 @@
-import React,{useEffect} from 'react'
-import { Row,Col,ListGroup,Button,Card, Container,Image } from 'react-bootstrap'
+import React,{useState,useEffect} from 'react'
+import { Form,Row,Col,ListGroup,Button,Card, Container,Image } from 'react-bootstrap'
+import {PayPalButton} from "react-paypal-button-v2"
 import {useDispatch,useSelector} from 'react-redux'
 import {Link} from 'react-router-dom'
 import Message from '../../components/Message/Message.component'
+import Loader from '../../components/Spinner/Spinner.component'
 import FormContainer from '../../components/FormContainer/form.container'
+import { saveShippingAction } from '../../redux/cart/cart.actions'
 import CheckoutSteps from '../../components/CheckoutProcess/check.component'
-import { createOrderAction } from '../../redux/order/order.action'
+import { createOrderAction, orderDetailsAction, orderPaidsAction } from '../../redux/order/order.action'
+import axios from 'axios'
+import { orderTypes } from '../../redux/order/order.types'
 
-function PlaceOrder({history,location}) {
+function OrderDetails({history,location,match}) {
 
     const cart = useSelector(state => state.cart)
 
@@ -19,33 +24,58 @@ function PlaceOrder({history,location}) {
     const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 100)
     const taxPrice = (itemsPrice*0.15).toFixed(2)
     const total = (itemsPrice*1 + shippingPrice*1 + taxPrice*1).toFixed(2)
-    const {success,loading,order} = useSelector(state => state.createOrderReducer) 
 
-    
+    const {order,loading,error} = useSelector(state => state.orderDetailsReducer) 
+    const {successPay,loading:loadingPay} = useSelector(state => state.orderPayReducer) 
+
+
+    const [sdkReady,setSdkReady] = useState(false)
+
+    const id = match.params.id
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if(success){
-            history.push(`/order/${order._id}`)
+
+        const addScript = async()=> {
+            const {data:clientId} = await axios.get("/api/config/paypal");
+            const script = document.createElement("script")
+            script.type = "text/javascript"
+            script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
+            script.async = true
+            script.onload = () => {
+                console.log("loaded");
+                setSdkReady(true)
+            }
+            document.body.appendChild(script)
         }
-    },[history,success])
+        console.log(successPay);
+        if(!order || successPay ){
+            dispatch({type:orderTypes.RESET_ORDER})
+            dispatch(orderDetailsAction(id))
+        }else if(!order.isPaid ){
+            if(!window.paypal){
+                addScript()
+            }else{
+                setSdkReady(true)
+            }
+        }
+    },[dispatch,id,order,successPay])
 
 
-    const placeOrder = (e) => {
-       e.preventDefault();
-       dispatch(createOrderAction({
-           orderItems:cart.cartItems,
-           shippingAddress:cart.shippingAddress,
-           paymentMethod:cart.paymentMethod,
-           shippingPrice,
-           taxPrice,
-           totalPrice:total
-
-       })) 
+    const handleSuccess =(paymentResult) => {
+        dispatch(orderPaidsAction(order._id,paymentResult))
     }
 
+
+    
+
     return (
+
+        loading ?  <Loader />  : error ?  <Message variant="danger">
+            {error}
+        </Message>:
+
         <>
             <FormContainer>
                 <CheckoutSteps step1 step2 step3 step4/>
@@ -56,28 +86,48 @@ function PlaceOrder({history,location}) {
                         <ListGroup variant="flush">
                             <ListGroup.Item>
                                 <h2>Shipping</h2>
+                                {
+                                    order.isDelivered ? 
+                                    <Message variant="success">Delivered</Message>
+                                    :
+                                    <Message variant="danger">Order not delivered</Message>
+
+                                }
+                                <p>
+                                    name:{order.user.name}
+                                </p>
+                                <p>
+                                    mailto:{order.user.email}
+                                </p>
                                 <p>
                                     <strong>Address:</strong>
-                                    {cart.shippingAddress.address}{' '},
-                                    {cart.shippingAddress.city} {' '},
-                                    {cart.shippingAddress.postalCode}{" "},
-                                    {cart.shippingAddress.country},
+                                    {order.shippingAddress.address}{' '},
+                                    {order.shippingAddress.city} {' '},
+                                    {order.shippingAddress.postalCode}{" "},
+                                    {order.shippingAddress.country},
                                 </p>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <h2>Payment Method</h2>
+                                {
+                                    order.isPaid ? 
+                                    <Message variant="success">Paid</Message>
+                                    :
+                                    <Message variant="danger">Order not paid</Message>
+
+                                }
                                 <p>
                                     <strong>method: </strong>
-                                    {cart.paymentMethod}
+                                    {order.paymentMethod}
                                 </p>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <h2>ORDER ITEMS</h2>
                                 {
-                                    cart.cartItems.length === 0 ? <Message>Your cart is empty</Message>:
+                                    order.orderItems.length === 0 ? <Message>Your cart is empty</Message>:
                                     <ListGroup variant="flush">
                                         {
-                                            cart.cartItems.map((item,index) => (
+                                            order.orderItems.map((item,index) => (
                                                 <ListGroup.Item>
                                                     <Row>
                                                         <Col md={2}>
@@ -149,9 +199,21 @@ function PlaceOrder({history,location}) {
                                         </Col>
                                     </Row>
                                 </ListGroup.Item>
-                            <Button type="button" onClick={placeOrder}>
-                                Place Order
-                            </Button>
+
+                                {
+                                    !order.isPaid && (
+
+                                        <ListGroup.Item>
+                                            {loadingPay && <Loader />}
+                                            {
+                                                !sdkReady ? <Loader/> : (
+                                                    <PayPalButton amount={order.totalPrice} onSuccess={handleSuccess} />
+                                                )
+                                            }
+                                        </ListGroup.Item>
+                                    )
+                                }
+                           
                             </ListGroup>
                         </Card>
                     </Col>
@@ -163,4 +225,4 @@ function PlaceOrder({history,location}) {
     )
 }
 
-export default PlaceOrder
+export default OrderDetails

@@ -21,6 +21,10 @@ app.listen(PORT,()=>{
 
 connectDb()
 app.use(express.json())
+
+app.get('/api/config/paypal',(req,res) => {
+    res.send(process.env.CLIENT_ID)
+})
 app.use('/api/products', productRouter )
 app.use('/api/users', userRouter )
 app.use('/api/orders', orderRouter )
