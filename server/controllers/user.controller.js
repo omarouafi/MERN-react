@@ -16,7 +16,8 @@ export const login = expressAsyncHandler(async(req,res,next) => {
             status:"success",
             user:{
                 name:user.name,
-                email:user.email
+                email:user.email,
+                isAdmin:user.isAdmin,
             },
             token:generateJwt(user._id)
         })
@@ -53,7 +54,8 @@ export const getMe = expressAsyncHandler(async(req,res,next) => {
             status:'success',
             user:{
                 name:user.name,
-                email:user.email
+                email:user.email,
+                isAdmin:user.isAdmin,
             },
             token:generateJwt(user._id)
         })
@@ -82,6 +84,7 @@ export const updateMe = expressAsyncHandler(async(req,res,next) => {
             status:'success',
             user:{
                 name:updated.name,
+                isAdmin:updated.isAdmin,
                 email:updated.email,
             },
             token:generateJwt(user._id)
@@ -114,10 +117,55 @@ export const register = expressAsyncHandler(async(req,res,next) => {
         user:{
             name:user.name,
             email:user.email,
+            isAdmin:user.isAdmin,
             
         },
         token:generateJwt(user._id)
     })
 
 
+})
+
+export const restrictedToAdmin = expressAsyncHandler(async(req,res,next) => {
+
+    if(req.user.isAdmin){
+       return next()
+    }
+    res.status(401)
+    throw Error("Not Authorized")
+    
+})
+
+
+export const removeUser = expressAsyncHandler(async(req,res,next) => {
+     await User.findByIdAndDelete(req.params.id)
+    res.status(204).json("deleted")
+    
+})
+
+export const getUser = expressAsyncHandler(async(req,res,next) => {
+     const user = await User.findById(req.params.id)
+    res.status(200).json({
+        status:'succes',
+        user
+    })
+    
+})
+export const updateUser = expressAsyncHandler(async(req,res,next) => {
+    const user = await User.findById(req.params.id)
+
+    if(user){
+        user.name = req.body.name ||user.name
+        user.email = req.body.email ||user.email
+        user.isAdmin = req.body.isAdmin
+
+    }
+
+    await user.save()
+
+    res.status(200).json({
+        status:'succes',
+        user
+    })
+    
 })

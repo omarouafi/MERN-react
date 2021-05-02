@@ -67,3 +67,89 @@ export const userUpdateRedcuer = (state={},action) => {
     }
 
 }
+
+export const listUsersReducer = (state={users:[]},action) => {
+
+    switch (action.type) {
+        case userTypes.LIST_USERS_START:
+            
+            return {...state,loading:true,error:undefined}
+    
+        case userTypes.LIST_USERS_SUCESS:
+            
+            return {...state,loading:false,error:undefined,users:action.payload.users}
+    
+        case userTypes.LIST_USERS_FAIL:
+            
+            return {...state,loading:false,error:action.payload}
+    
+        default:
+            return state;
+    }
+
+}
+
+export const deleteUserReducer = (state={},action) => {
+
+    switch (action.type) {
+        case userTypes.DELETE_USER_START:
+            
+            return {...state,loading:true,error:undefined}
+    
+        case userTypes.DELETE_USER_SUCESS:
+            
+            return {...state,loading:false,error:undefined,success:true}
+    
+        case userTypes.DELETE_USER_FAIL:
+            
+            return {...state,loading:false,error:action.payload}
+    
+        default:
+            return state;
+    }
+
+}
+
+
+
+export const adminUserGetRedcuer = (state={},action) => {
+
+    switch (action.type) {
+        case userTypes.ADMIN_GET_USER_START:
+            
+            return {...state,loading:true,error:undefined}
+    
+        case userTypes.ADMIN_GET_USER_SUCESS:
+            
+            return {...state,loading:false,error:undefined,user:action.payload.user}
+    
+        case userTypes.ADMIN_GET_USER_FAIL:
+            
+            return {...state,loading:false,error:action.payload}
+    
+        default:
+            return state;
+    }
+
+}
+
+export const adminUserUpdateRedcuer = (state={},action) => {
+
+    switch (action.type) {
+        case userTypes.ADMIN_UPDATE_USER_START:
+            
+            return {...state,loading:true,error:undefined}
+    
+        case userTypes.ADMIN_UPDATE_USER_SUCESS:
+            
+            return {...state,loading:false,error:undefined,success:true}
+    
+        case userTypes.ADMIN_UPDATE_USER_FAIL:
+            
+            return {...state,loading:false,error:action.payload}
+    
+        default:
+            return state;
+    }
+
+}

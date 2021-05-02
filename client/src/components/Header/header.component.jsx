@@ -25,6 +25,7 @@ const Header = () => {
                     {
                         currentUser ? 
                         
+                
                         <NavDropdown title={currentUser.user.name} id="username" >
 
                             
@@ -43,8 +44,37 @@ const Header = () => {
                         
                         :
                         <Nav.Link href="/login"><i className="fa fa-user"></i> Login</Nav.Link>
-
                     }
+
+                    {
+                                currentUser && currentUser.user.isAdmin ? 
+                        
+                
+                                <NavDropdown title="Manage"id="manage" >
+        
+                                    
+                                        <LinkContainer to="/admin/products">
+                                            <NavDropdown.Item>
+                                                products
+                                            </NavDropdown.Item>
+                                        </LinkContainer>
+                                    
+                                        <LinkContainer to="/admin/users">
+                                            <NavDropdown.Item>
+                                                users
+                                            </NavDropdown.Item>
+                                        </LinkContainer>
+                                    
+                                        <LinkContainer to="/admin/orders">
+                                            <NavDropdown.Item>
+                                                orders
+                                            </NavDropdown.Item>
+                                        </LinkContainer>
+                                </NavDropdown>
+                                
+                                :null
+                    }
+
                 </Nav>
             </Container>
             </Navbar>

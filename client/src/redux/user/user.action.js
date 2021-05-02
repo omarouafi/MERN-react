@@ -113,3 +113,114 @@ export const updateUserAction = ({name,email,password}) => async (dispatch,getSt
     }
     
 }
+export const listUsersAction = () => async (dispatch,getState) =>  {
+
+    try {
+        dispatch({type:userTypes.LIST_USERS_START})
+        const config = {
+            headers:{
+                'Content-Type':'application/json',
+                Authorization:`Bearer ${getState().userLogin.currentUser.token}`
+            }
+        }
+
+        const {data} = await axios.get(
+            `/api/users`,
+            config
+
+    )
+    
+    
+    dispatch({type:userTypes.LIST_USERS_SUCESS,payload:data})
+    
+    
+    } catch (error) {
+        dispatch({type:userTypes.LIST_USERS_FAIL,payload:(error.response && error.response.data ? error.response.data.message : error.message  )})    
+    }
+    
+}
+
+
+export const deleteUserAction = (id) => async (dispatch,getState) =>  {
+
+    try {
+        dispatch({type:userTypes.DELETE_USER_START})
+        const config = {
+            headers:{
+                
+                Authorization:`Bearer ${getState().userLogin.currentUser.token}`
+            }
+        }
+
+        const {data} = await axios.delete(
+            `/api/users/${id}`,
+            config
+
+    )
+    
+    
+    dispatch({type:userTypes.DELETE_USER_SUCESS,payload:data})
+    
+    
+    } catch (error) {
+        dispatch({type:userTypes.DELETE_USER_FAIL,payload:(error.response && error.response.data ? error.response.data.message : error.message  )})    
+    }
+    
+}
+
+
+
+export const adminGetUserAction = (id,data) => async (dispatch,getState) =>  {
+
+    try {
+        dispatch({type:userTypes.ADMIN_GET_USER_START})
+        const config = {
+            headers:{
+                
+                Authorization:`Bearer ${getState().userLogin.currentUser.token}`
+            }
+        }
+
+        const {data} = await axios.get(
+            `/api/users/${id}`,
+            
+            config
+
+    )
+    
+    
+    dispatch({type:userTypes.ADMIN_GET_USER_SUCESS,payload:data})
+    
+    
+    } catch (error) {
+        dispatch({type:userTypes.ADMIN_GET_USER_FAIL,payload:(error.response && error.response.data ? error.response.data.message : error.message  )})    
+    }
+    
+}
+export const adminUpdateUserAction = (id,se) => async (dispatch,getState) =>  {
+
+    try {
+        dispatch({type:userTypes.ADMIN_UPDATE_USER_START})
+        const config = {
+            headers:{
+                'Content-Type':"Application/Json",
+                Authorization:`Bearer ${getState().userLogin.currentUser.token}`
+            }
+        }
+
+        const {data} = await axios.patch(
+            `/api/users/${id}`,
+            se,
+            config
+
+    )
+    
+    
+    dispatch({type:userTypes.ADMIN_UPDATE_USER_SUCESS,payload:data})
+    
+    
+    } catch (error) {
+        dispatch({type:userTypes.ADMIN_UPDATE_USER_FAIL,payload:(error.response && error.response.data ? error.response.data.message : error.message  )})    
+    }
+    
+}
