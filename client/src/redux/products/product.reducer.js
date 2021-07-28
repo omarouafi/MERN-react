@@ -11,8 +11,22 @@ export const productReducer = (state=INITIAL_STATE,action) => {
         case productTypes.FETCH_PRODS_START:
             return {...state,loading:true}
         case productTypes.FETCH_PRODS_SUCCESS:
-            return {...state,loading:false,products:action.payload}
+            return {...state,loading:false,products:action.payload.products,pages:action.payload.pages,page:action.payload.page}
         case productTypes.FETCH_PRODS_FAILURE:
+            return {...state,loading:false,error:action.payload}
+        default:
+            return state
+    }   
+}
+
+
+export const topProductReducer = (state=INITIAL_STATE,action) => {
+    switch(action.type){
+        case productTypes.TOP_PRODS_START:
+            return {...state,loading:true}
+        case productTypes.TOP_PRODS_SUCCESS:
+            return {...state,loading:false,products:action.payload}
+        case productTypes.TOP_PRODS_FAILURE:
             return {...state,loading:false,error:action.payload}
         default:
             return state
@@ -54,6 +68,19 @@ export const updateProductReducer = (state={},action) => {
         case productTypes.UPDATE_PRODS_SUCCESS:
             return {...state,loading:false,success:true}
         case productTypes.UPDATE_PRODS_FAILURE:
+            return {...state,loading:false,error:action.payload}
+        default:
+            return state
+    }   
+}
+
+export const reviewProductReducer = (state={},action) => {
+    switch(action.type){
+        case productTypes.REVIEW_PRODS_START:
+            return {...state,loading:true}
+        case productTypes.REVIEW_PRODS_SUCCESS:
+            return {...state,loading:false,success:true}
+        case productTypes.REVIEW_PRODS_FAILURE:
             return {...state,loading:false,error:action.payload}
         default:
             return state

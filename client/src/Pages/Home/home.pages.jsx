@@ -7,17 +7,24 @@ import "./home.styles.scss"
 import { productsFetchAsync } from '../../redux/products/product.actions';
 import Loader from '../../components/Spinner/Spinner.component';
 import Message from '../../components/Message/Message.component';
+import Paginate from '../../components/Pagination/pagination.component';
+import TopProducts from '../../components/Carousel/carousel.component';
+import Helmet from '../../components/Helmet/helmet.component';
 
 
 
-const Home = () => {
+const Home = ({match}) => {
     
+
+    const query = match.params.query || ''
+    const page = match.params.page*1 || 1
+
     const dispatch = useDispatch();
     const productsList = useSelector(state => state.productRed);
-    const {loading,error,products} = productsList
+    const {loading,error,products,pages} = productsList
     useEffect(()=>{
-        dispatch(productsFetchAsync())
-    },[dispatch])
+        dispatch(productsFetchAsync(query,page))
+    },[dispatch,query,page])
 
     return (
 
@@ -28,10 +35,12 @@ const Home = () => {
             {
                 loading ?
                 <Loader />
-                 : error ? 
-                 <Message variant='danger'>{error}</Message>
-                 :
-                 <>
+                : error ? 
+                <Message variant='danger'>{error}</Message>
+                :
+                <>
+                <Helmet title={"Welcome to proshop"} />
+                <TopProducts />
             <h1>Latest Products</h1>
             <Row>
                 {
@@ -47,6 +56,7 @@ const Home = () => {
             </Row>
             </>
             }
+            <Paginate pages={pages} page={page}  />
             </Container>
         </main>
 

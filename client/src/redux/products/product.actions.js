@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { propTypes } from 'react-bootstrap/esm/Image'
 import {productTypes} from './product.types'
 
 const fetchProductsStart = () => ({
@@ -15,12 +16,12 @@ const fetchProductFailure = (error) => ({
 })
 
 
-export const productsFetchAsync = () => async dispatch => {
+export const productsFetchAsync = (query='',page=1) => async dispatch => {
 
     try {
         dispatch(fetchProductsStart())
 
-        const {data} = await axios.get('/api/products')
+        const {data} = await axios.get(`/api/products?name=${query}&page=${page}`)
         dispatch(fetchProductSuccess(data))
         
         
@@ -28,6 +29,23 @@ export const productsFetchAsync = () => async dispatch => {
         dispatch(fetchProductFailure(
             (error.response && error.response.data.message ? error.response.data.message : error.message)
         ))
+        
+    }
+
+}
+export const topProductsAction = () => async dispatch => {
+
+    try {
+        dispatch({type:productTypes.TOP_PRODS_START})
+
+        const {data} = await axios.get(`/api/products/top`)
+        dispatch({type:productTypes.TOP_PRODS_SUCCESS,payload:data})
+        
+        
+    } catch (error) {
+        dispatch({type:productTypes.TOP_PRODS_FAILURE,payload:
+            (error.response && error.response.data.message ? error.response.data.message : error.message)
+        })
         
     }
 
@@ -101,6 +119,31 @@ export const addProductAction = (data) => async (dispatch,getState) => {
         
     } catch (error) {
         dispatch({type:productTypes.CREATE_PRODS_FAILURE,payload:
+            (error.response && error.response.data.message ? error.response.data.message : error.message)
+        })
+        
+    }
+
+}
+
+export const reviewProductAction = (id,data) => async (dispatch,getState) => {
+
+    try {
+        dispatch({type:productTypes.REVIEW_PRODS_START})
+        
+
+        const config = {
+            headers : {
+                Authorization:`Bearer ${getState().userLogin.currentUser.token}`
+            }
+        }
+
+        await axios.post(`/api/products/${id}/reviews`,data,config)
+        dispatch({type:productTypes.REVIEW_PRODS_SUCCESS})
+        
+        
+    } catch (error) {
+        dispatch({type:productTypes.REVIEW_PRODS_FAILURE,payload:
             (error.response && error.response.data.message ? error.response.data.message : error.message)
         })
         

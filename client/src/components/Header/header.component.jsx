@@ -4,6 +4,7 @@ import { Navbar,Nav, Container,NavDropdown } from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 import { logout } from '../../redux/user/user.action';
+import Search from '../Search/search.component'
 const Header = () => {
 
 
@@ -20,6 +21,7 @@ const Header = () => {
             <Navbar bg="dark" variant="dark">
             <Container>
                     <Navbar.Brand href='/'>ProShop</Navbar.Brand>
+                    <Search />
                 <Nav className="ml-auto">
                     <Nav.Link href="/cart"> <i className="fa fa-shopping-cart"></i>Cart</Nav.Link>
                     {

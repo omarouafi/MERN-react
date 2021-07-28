@@ -7,6 +7,10 @@ import {NotFound,errorHandler} from './middleware/errMiddleware.js'
 import productRouter from "./routes/products.routes.js"
 import userRouter from "./routes/user.routes.js"
 import orderRouter from "./routes/order.routes.js"
+import path from 'path'
+import morgan from "morgan"
+import uploadRouter from './routes/upload.routes.js'
+
 
 dotenv.config()
 
@@ -22,13 +26,27 @@ app.listen(PORT,()=>{
 connectDb()
 app.use(express.json())
 
+
+const __dirname = path.resolve()
+
+app.use('/uploads',express.static(path.join(__dirname,'/uploads')))
+
+app.use(morgan('dev'))
+
 app.get('/api/config/paypal',(req,res) => {
     res.send(process.env.CLIENT_ID)
 })
 app.use('/api/products', productRouter )
 app.use('/api/users', userRouter )
 app.use('/api/orders', orderRouter )
+app.use('/api/upload', uploadRouter )
 
+
+
+
+    app.use(express.static(path.join(__dirname,'build')))
+
+    app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'build','index.html')))
 
 
 

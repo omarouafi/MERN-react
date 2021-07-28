@@ -8,6 +8,7 @@ import Loader from '../../components/Spinner/Spinner.component'
 import FormContainer from '../../components/FormContainer/form.container'
 import { fetchProdDetail } from '../../redux/product_detail/p_detail.actions'
 import { updateProductAction } from '../../redux/products/product.actions'
+import axios from "axios"
 
 function EditProduct({history,match}) {
 
@@ -16,6 +17,7 @@ function EditProduct({history,match}) {
     const [category,setCategory] = useState('')
     const [brand,setBrand] = useState('')
     const [image,setImage] = useState('')
+    const [uploading,setUploading] = useState(false)
     const [description,setDescription] = useState('')
     const [countInStock,setCountInStock] = useState('')
 
@@ -53,6 +55,33 @@ function EditProduct({history,match}) {
         
         
     }
+    const handleUpload = async (e) => {
+        e.preventDefault()
+        
+        const file = e.target.files[0]
+        const form = new FormData()
+        form.append('image',file)
+
+        try {
+            setUploading(true)
+            
+            const config = {
+                headers:{
+                    "Content-Type":"multipart/form-data"
+                }
+            }
+
+            const {data} = await axios.post('/api/upload',form,config)
+            setImage(data)
+            setUploading(false)
+
+            
+        } catch (error) {
+            console.log(error);
+            setUploading(false)
+        }
+        
+    }
 
     return (
         <FormContainer>
@@ -84,6 +113,9 @@ function EditProduct({history,match}) {
                         Image 
                     </Form.Label>
                     <Form.Control type="text" placeholder="Enter the image" value={image} onChange={(e) => setImage(e.target.value) } />
+                    <Form.File custom label="Choose an Image" id="image-upload" onChange={handleUpload} />
+                    { uploading && <Loader/> }
+              
                 </Form.Group>
                
                 <Form.Group controlId="category">

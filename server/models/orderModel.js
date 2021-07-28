@@ -67,6 +67,8 @@ const orderSchema = new mongoose.Schema({
     },
     deliveredAt:Date
    
+},{
+    timestamps:true
 })
 
 export default mongoose.model("Order",orderSchema)

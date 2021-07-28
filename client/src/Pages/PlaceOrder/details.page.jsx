@@ -8,7 +8,7 @@ import Loader from '../../components/Spinner/Spinner.component'
 import FormContainer from '../../components/FormContainer/form.container'
 import { saveShippingAction } from '../../redux/cart/cart.actions'
 import CheckoutSteps from '../../components/CheckoutProcess/check.component'
-import { createOrderAction, orderDetailsAction, orderPaidsAction } from '../../redux/order/order.action'
+import { createOrderAction, deliverOrdersAction, orderDetailsAction, orderPaidsAction } from '../../redux/order/order.action'
 import axios from 'axios'
 import { orderTypes } from '../../redux/order/order.types'
 
@@ -26,6 +26,8 @@ function OrderDetails({history,location,match}) {
     const total = (itemsPrice*1 + shippingPrice*1 + taxPrice*1).toFixed(2)
 
     const {order,loading,error} = useSelector(state => state.orderDetailsReducer) 
+    const {success} = useSelector(state => state.orderDeliverReducer) 
+    const {currentUser} = useSelector(state => state.userLogin) 
     const {successPay,loading:loadingPay} = useSelector(state => state.orderPayReducer) 
 
 
@@ -50,7 +52,7 @@ function OrderDetails({history,location,match}) {
             document.body.appendChild(script)
         }
         console.log(successPay);
-        if(!order || successPay ){
+        if(!order || successPay || order._id !== id){
             dispatch({type:orderTypes.RESET_ORDER})
             dispatch(orderDetailsAction(id))
         }else if(!order.isPaid ){
@@ -60,13 +62,17 @@ function OrderDetails({history,location,match}) {
                 setSdkReady(true)
             }
         }
-    },[dispatch,id,order,successPay])
-
+    },[dispatch,id,order,match,successPay,success])
 
     const handleSuccess =(paymentResult) => {
         dispatch(orderPaidsAction(order._id,paymentResult))
     }
+    const markDelivered =() => {
+        dispatch(deliverOrdersAction(order._id))
+    }
 
+
+    
 
     
 
@@ -199,6 +205,12 @@ function OrderDetails({history,location,match}) {
                                         </Col>
                                     </Row>
                                 </ListGroup.Item>
+
+                                {
+                                    currentUser && currentUser.user.isAdmin && order.isPaid && !order.isDelivered && (
+                                        <Button onClick={markDelivered}>Mark as delivered</Button>
+                                    ) 
+                                }
 
                                 {
                                     !order.isPaid && (

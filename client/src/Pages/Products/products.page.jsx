@@ -6,21 +6,22 @@ import Loader from '../../components/Spinner/Spinner.component'
 import Message from '../../components/Message/Message.component'
 import { deleteProductAction, productsFetchAsync } from '../../redux/products/product.actions'
 import { productTypes } from '../../redux/products/product.types'
+import Paginate from '../../components/Pagination/pagination.component'
 
-const ProductsList = ({history}) => {
+const ProductsList = ({history,match}) => {
 
-    const {error,products,loading} = useSelector(state=>state.productRed)
+    const {error,products,loading,pages,page} = useSelector(state=>state.productRed)
     const {error:errDel,success,loading:loadingDel} = useSelector(state=>state.deleteProductReducer)
     const {currentUser} = useSelector(state=>state.userLogin)
     const dispatch = useDispatch()
     useEffect(()=>{
         dispatch({type:productTypes.RESET_PRODS})
         if(currentUser && currentUser.user.isAdmin){
-            dispatch(productsFetchAsync())
+            dispatch(productsFetchAsync('',match.params.page))
         }else{
             history.push('/')
         }
-    },[currentUser,dispatch,history,success])
+    },[currentUser,dispatch,history,success,match])
 
     const handleDelete = (id) => {
        dispatch(deleteProductAction(id))
@@ -94,6 +95,8 @@ const ProductsList = ({history}) => {
 
             
         </>)}
+
+        <Paginate pages={pages} page={page} isAdmin />
         </Container>
     )
 }

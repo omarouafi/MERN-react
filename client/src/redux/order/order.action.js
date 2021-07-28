@@ -61,6 +61,61 @@ export const orderDetailsAction = (id) => async (dispatch,getState) => {
 
 }
 
+export const getOrdersAction = () => async (dispatch,getState) => {
+
+    try {
+        dispatch({type:orderTypes.GET_ORDERS_START})
+
+
+
+        const config = {
+            headers:{
+                Authorization:`Bearer ${getState().userLogin.currentUser.token}`
+            },
+
+        }
+        
+        const {data} = await axios.get(`/api/orders/`,config)
+        dispatch({type:orderTypes.GET_ORDERS_SUCCESS,payload:data})
+        
+        
+    } catch (error) {
+        dispatch({type:orderTypes.GET_ORDERS_FAIL,
+            payload:(error.response && error.response.data.message ? error.response.data.message : error.message)
+        })
+        
+    }
+
+}
+
+export const deliverOrdersAction = (id) => async (dispatch,getState) => {
+
+    try {
+        dispatch({type:orderTypes.DELIVERED_ORDER_START})
+
+
+
+        const config = {
+            headers:{
+                
+                Authorization:`Bearer ${getState().userLogin.currentUser.token}`
+            }
+        }
+        console.log(config);
+        
+        await axios.put(`/api/orders/${id}/deliver`,{},config)
+        dispatch({type:orderTypes.DELIVERED_ORDER_SUCCESS})
+        
+        
+    } catch (error) {
+        dispatch({type:orderTypes.DELIVERED_ORDER_FAIL,
+            payload:(error.response && error.response.data.message ? error.response.data.message : error.message)
+        })
+        
+    }
+
+}
+
 
 
 export const orderPaidsAction = (orderId,paymentResult) => async (dispatch,getState) => {

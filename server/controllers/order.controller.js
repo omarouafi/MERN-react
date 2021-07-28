@@ -3,13 +3,18 @@ import Order from '../models/orderModel.js'
 
 
 export const getOrders = expressAsyncHandler(async(req,res,next) => {
-    const orders = await Order.find()
+    const orders = await Order.find().populate('user','name')
     res.status(200).json(orders)
 }) 
 
 
 export const getOrder = expressAsyncHandler(async(req,res,next) => {
     const order = await Order.findById(req.params.id).populate('user','name email')
+    res.status(200).json(order)
+}) 
+
+export const setDelivered = expressAsyncHandler(async(req,res,next) => {
+    const order = await Order.findByIdAndUpdate(req.params.id,{ isDelivered:true,deliveredAt:Date.now() })
     res.status(200).json(order)
 }) 
 
